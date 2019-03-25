@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.lrshuai.optimisticlock.usr.mapper.UserAccountMapper">
+
+    <resultMap id="userAccount" type="top.lrshuai.optimisticlock.usr.entity.UserAccount">
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <id column="user_id" property="userId" jdbcType="BIGINT" />
+        <id column="balance" property="balance" jdbcType="DECIMAL" />
+        <id column="version" property="version" jdbcType="BIGINT" />
+        <id column="create_by" property="createBy" jdbcType="BIGINT" />
+        <id column="create_time" property="createTime"  typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler" jdbcType="OTHER"/>
+        <id column="modify_by" property="modifyBy" jdbcType="BIGINT" />
+        <id column="modfiy_time" property="modifyTime" typeHandler="org.apache.ibatis.type.LocalDateTimeTypeHandler" jdbcType="OTHER" />
+    </resultMap>
+
+
+    <update id="updateAccount" parameterType="top.lrshuai.optimisticlock.usr.entity.UserAccount">
+        update usr_user_account set
+        version = version+1
+        <if test="userId != null">
+            ,user_id = #{userId}
+        </if>
+        <if test="balance != null">
+            ,balance = #{balance}
+        </if>
+        <if test="createBy != null">
+            ,create_by = #{createBy}
+        </if>
+        <if test="createTime != null">
+            ,create_time = #{createTime}
+        </if>
+        <if test="modifyBy != null">
+            ,modify_by = #{modifyBy}
+        </if>
+        <if test="modifyTime != null">
+           ,modify_time = #{modifyTime}
+        </if>
+        where
+         version=#{version}
+        <if test="id != null">
+           and  id=#{id}
+        </if>
+        <if test="userId != null">
+          and user_id=#{userId}
+        </if>
+
+    </update>
+
+
+
+    <select id="getUserAccountByUserId" resultMap="userAccount">
+        select
+        *
+        from
+          usr_user_account
+        where
+          user_id=#{userId}
+    </select>
+</mapper>
