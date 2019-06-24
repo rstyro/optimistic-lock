@@ -5,6 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.transaction.annotation.Transactional;
 import top.lrshuai.optimisticlock.common.ApiException;
 import top.lrshuai.optimisticlock.common.ApiResultEnum;
@@ -15,7 +16,7 @@ import top.lrshuai.optimisticlock.common.ApiResultEnum;
  */
 @Aspect
 @Configuration
-public class TryAgainAspect {
+public class TryAgainAspect implements Ordered {
 
 	/**
 	 * 默认重试几次
@@ -46,7 +47,9 @@ public class TryAgainAspect {
 			numAttempts++;
 			try {
 				//再次执行业务代码
-				return pjp.proceed();
+				Object proceed = pjp.proceed();
+				System.out.println("==重试成功==");
+				return proceed;
 			} catch (TryAgainException ex) {
 				if (numAttempts > maxRetries) {
 					//log failure information, and throw exception
